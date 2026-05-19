@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./frontend/styles/css/index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Oswald:wght@200..700&family=Special+Gothic+Condensed+One&display=swap"
+      rel="stylesheet"
+    />
+    <title>Agenda de Compromissos</title>
+  </head>
+  <body>
+    <div class="container-title">
+      <img class="icon-title" src="./frontend/src/assets/lista-de-desejos.png" alt="Icone To-Do List"/>
+      <h1>Agenda de Compromissos</h1>
+      <img class="icon-title" src="./frontend/src/assets/lista-de-desejos.png" alt="Icone To-Do List"/>
+    </div>
+
+    <div id="container-adc">
+      <input type="text" id="input-tarefa" placeholder="Digite uma tarefa..." />
+      <button class="btn" id="btn-add">Adicionar tarefa!</button>
+    </div>
+
+    <div id="container-editar">
+      <div id="container-index">
+        <input type="text" id="input-index" placeholder="Ex.:1, 2" />
+        <button class="btn" id="btn-delete">Apagar tarefa!</button>
+        <button class="btn" id="btnDeleteAll">Apagar Tudo!</button>
+        <span id="p-index" style="display: none"
+          ><strong
+            >* O campo deve ser preenchido com um índice da lista</strong
+          ></span
+        >
+      </div>
+      <input type="text" id="input-editar" placeholder="Nova tarefa..." />
+      <button class="btn" id="btn-edt">Editar tarefa!</button>
+    </div>
+
+    <div id="container-agenda">
+                <!-- Criando uma agenda de compromissos -->
+        <label for="data">Data:</label>
+        <input type="date" id="data" placeholder="Digite a data do compromisso">
+        <label for="input_tarefa">Compromisso:</label>
+        <input id="input_tarefa" type="text" placeholder="Digite o compromisso">
+        <button id="btn_adc">Adicionar</button>
+    </div>
+
+    <div id="container-lista">
+      <ol id="lista"></ol>
+    </div>
+
+    <div id="erros"></div>
+
+    <script type="module" src="backend/scripts/script.js"></script>
+  </body>
+</html>

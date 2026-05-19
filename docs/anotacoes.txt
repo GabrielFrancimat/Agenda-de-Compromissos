@@ -1,0 +1,55 @@
+O que é a DOM?
+- Documento Object Model (Modelo de Objeto de Documento)
+- É uma interface de programação para documentos HTML e XML.
+- Representa a estrutura do documento como uma árvore de objetos.
+- Permite que linguagens de programação acessem e manipulem o conteúdo, a estrutura e o estilo dos documentos.
+
+O que é renderização?
+- É o processo de exibir o conteúdo de um documento (HTML, XML) em uma interface gráfica.
+- Envolve a conversão da estrutura do DOM em elementos visuais que podem ser apresentados ao usuário.
+- A renderização pode ser influenciada por CSS, que define o estilo e a aparência dos elementos.
+
+Quais os principais métodos de manipulação da DOM?
+- document.getElementById(): Retorna um elemento pelo seu ID.
+- document.querySelector(): Retorna o primeiro elemento que corresponde a um seletor CSS.
+- element.appendChild(): Adiciona um novo filho a um elemento.
+- element.removeChild(): Remove um filho de um elemento.
+- element.setAttribute(): Define um atributo em um elemento.
+- element.classList.add(): Adiciona uma classe a um elemento.
+- element.classList.remove(): Remove uma classe de um elemento.
+
+Qual desses métodos é mais ágil na renderização?
+- document.getElementById() é geralmente o mais rápido, pois busca elementos pelo ID, que é único e indexado.
+- document.querySelector() é mais flexível, mas pode ser mais lento, pois precisa analisar o seletor CSS.
+- Métodos que alteram a estrutura do DOM, como appendChild() e removeChild(), podem causar reflow e repaint, afetando a performance.
+
+
+let objeto = {
+    nome: "Objeto Exemplo",
+    tipo: "Exemplo",
+    descricao: "Este é um objeto de exemplo"
+}
+
+let array= [1, 2, 3, 4]
+
+array[0] = 1;
+array[1] = 2;
+array[2] = 3;
+
+li --- button (1 nó - indice 0)
+li --- button (2 nó - indice 1)
+li.childNodes[0].nodeValue = "Novo Texto"
+li.childNodes[1].nodeValue = "Novo Botão"
+
+**Segue um detalhamento sobre o uso de childNodes:**
+- childNodes é uma propriedade que retorna uma coleção de todos os nós filhos de um elemento.
+- Cada nó filho pode ser um elemento, um texto ou um comentário.
+- Os nós são indexados a partir de 0, ou seja, o primeiro nó filho é acessado com childNodes[0], o segundo com childNodes[1] e assim por diante.
+- O nó de texto é o childNodes[0], e o botão é o childNodes[1].
+- Para atualizar o texto de um nó, você pode usar a propriedade nodeValue.
+
+
+TAREFA DE CASA 16/08/2025
+- Criar uma validação para evitar tarefas repetidas;
+- Criar o botão de ação "Apagar Tarefa";
+- Iniciar a estilização via CSS;
