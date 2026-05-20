@@ -11,11 +11,20 @@ const btnAdd = document.getElementById("btn-add");
 const btnDelete = document.getElementById("btn-delete");
 const btnDeleteAll = document.getElementById("btnDeleteAll");
 const btnEdit = document.getElementById("btn-edt");
-let newId = 1;
+const inputData = document.getElementById("data");
+const inputCompromisso = document.getElementById("input_tarefa");
+const btnAgenda = document.getElementById("btn_adc");
+const totalTarefas = document.getElementById("total-tarefas");
+const tarefasFeitas = document.getElementById("tarefas-feitas");
+const dataAtual = document.getElementById("data-atual");
+const emptyState = document.getElementById("empty-state");
 
-window.onload = function () { carregarTarefas(); }
+window.onload = function () {
+  carregarTarefas();
+  atualizarResumo();
+  mostrarDataAtual();
+};
 
-// Lógica para quando clicar dentro do input mostrar o elemento "p"
 inputIndex.addEventListener("focus", function () {
   pIndex.style.display = "flex";
 });
@@ -28,37 +37,62 @@ btnAdd.addEventListener("click", () => enviarTarefa());
 btnDelete.addEventListener("click", () => apagarTarefa());
 btnDeleteAll.addEventListener("click", () => apagarTodasTarefas());
 btnEdit.addEventListener("click", () => editarLista());
+btnAgenda.addEventListener("click", () => adicionarCompromisso());
 
 document.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-      enviarTarefa();
+  if (e.key !== "Enter") return;
+
+  if (document.activeElement === inputEditar) {
+    editarLista();
+    return;
   }
+
+  if (
+    document.activeElement === inputCompromisso ||
+    document.activeElement === inputData
+  ) {
+    adicionarCompromisso();
+    return;
+  }
+
+  enviarTarefa();
 });
 
 document.addEventListener("keydown", function (e) {
   if (e.key === "Delete") {
-      apagarTarefa();
+    apagarTarefa();
   }
 });
 
 function carregarTarefas() {
-  for (let i = 1; i <= localStorage.length; i++) {
-    const tarefa = localStorage.getItem("tarefa_" + i);
-    if (tarefa) {
-      criarTarefaNaLista(tarefa, i); // monta o <li> sem precisar do input
+  const tarefasSalvas = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const chave = localStorage.key(i);
+    if (chave.startsWith("tarefa_")) {
+      const indice = Number(chave.replace("tarefa_", ""));
+      tarefasSalvas.push({
+        id: indice,
+        texto: localStorage.getItem(chave),
+      });
     }
   }
+
+  tarefasSalvas.sort((a, b) => a.id - b.id);
+  tarefasSalvas.forEach((tarefa) => criarTarefaNaLista(tarefa.texto, tarefa.id));
 }
 
 function tarefaExiste(tarefa) {
   const itens = listaTarefas.querySelectorAll("li");
   for (let i = 0; i < itens.length; i++) {
-    if (itens[i].textContent.toLowerCase() === tarefa.toLowerCase()) {
-      textError.style.visibility = "visible";
-      textError.textContent = "Erro! Essa tarefa já existe na sua lista !";
-      inputTarefas.value = "";
-      inputIndex.value = "";
-      inputEditar.value = "";
+    const textoItem = itens[i]
+      .childNodes[0]
+      .nodeValue.trim()
+      .toLowerCase();
+
+    if (textoItem === tarefa.toLowerCase()) {
+      mostrarErro("Erro! Essa tarefa ja existe na sua lista.");
+      limparCamposTexto();
       return true;
     }
   }
@@ -67,15 +101,15 @@ function tarefaExiste(tarefa) {
 
 function tarefaFeita(li) {
   li.classList.toggle("feito");
+  atualizarResumo();
 }
 
 function criarBotaoCheck(li) {
   const btnCheck = document.createElement("button");
-  btnCheck.textContent = "Check";
+  btnCheck.textContent = "Concluir";
   btnCheck.classList.add("btn-check");
   btnCheck.classList.add("btn");
 
-  // Quando clicar, marca/desmarca como feito
   btnCheck.onclick = function () {
     tarefaFeita(li);
   };
@@ -91,25 +125,84 @@ function criarTarefaNaLista(tarefa, id) {
 
   criarBotaoCheck(li);
   listaTarefas.appendChild(li);
+  atualizarResumo();
 }
 
 function enviarTarefa() {
-  const novaTarefa = inputTarefas.value;
+  const novaTarefa = inputTarefas.value.trim();
+  const newId = listaTarefas.querySelectorAll("li").length + 1;
 
-  if (tarefaExiste(novaTarefa)) return;
-
-  if (novaTarefa.trim() === "") {
-    textError.style.visibility = "visible";
-    textError.textContent = "Error!! Digite algo no campo de adicionar a tarefa !";
+  if (novaTarefa === "") {
+    mostrarErro("Erro! Digite algo no campo de adicionar tarefa.");
     return;
   }
 
-  // salva no localStorage
+  if (tarefaExiste(novaTarefa)) return;
+
   localStorage.setItem("tarefa_" + newId, novaTarefa);
-
   criarTarefaNaLista(novaTarefa, newId);
-  newId++;
 
-  textError.style.visibility = "hidden";
+  esconderErro();
   inputTarefas.value = "";
 }
+
+function adicionarCompromisso() {
+  const data = inputData.value;
+  const compromisso = inputCompromisso.value.trim();
+  const newId = listaTarefas.querySelectorAll("li").length + 1;
+
+  if (data === "" || compromisso === "") {
+    mostrarErro("Erro! Preencha a data e o compromisso antes de adicionar.");
+    return;
+  }
+
+  const dataFormatada = new Date(`${data}T12:00:00`).toLocaleDateString(
+    "pt-BR"
+  );
+  const tarefaComData = `${dataFormatada} - ${compromisso}`;
+
+  if (tarefaExiste(tarefaComData)) return;
+
+  localStorage.setItem("tarefa_" + newId, tarefaComData);
+  criarTarefaNaLista(tarefaComData, newId);
+
+  esconderErro();
+  inputData.value = "";
+  inputCompromisso.value = "";
+}
+
+function atualizarResumo() {
+  const itens = listaTarefas.querySelectorAll("li");
+  const concluidas = listaTarefas.querySelectorAll("li.feito");
+
+  totalTarefas.textContent = itens.length;
+  tarefasFeitas.textContent = concluidas.length;
+  emptyState.style.display = itens.length === 0 ? "block" : "none";
+}
+
+function mostrarDataAtual() {
+  const hoje = new Date();
+  dataAtual.textContent = hoje.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  });
+}
+
+function mostrarErro(mensagem) {
+  textError.style.visibility = "visible";
+  textError.textContent = mensagem;
+}
+
+function esconderErro() {
+  textError.style.visibility = "hidden";
+  textError.textContent = "";
+}
+
+function limparCamposTexto() {
+  inputTarefas.value = "";
+  inputIndex.value = "";
+  inputEditar.value = "";
+  inputCompromisso.value = "";
+}
+
+export { atualizarResumo, esconderErro, mostrarErro };
